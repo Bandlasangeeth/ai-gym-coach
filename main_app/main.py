@@ -25,6 +25,16 @@ def main():
         layout="centered"
     )
 
+    # Diagnostic check for MediaPipe shared library loading issues
+    try:
+        import mediapipe.tasks.python.core.mediapipe_c_bindings as cb
+        cb.load_shared_library(cb._CTYPES_SIGNATURES)
+    except Exception as e:
+        import traceback
+        st.error("⚠️ MediaPipe System Dependency Error detected!")
+        st.code(f"Error detail:\n{e}\n\nTraceback:\n{traceback.format_exc()}")
+
+
     load_css(os.path.join(os.getcwd(), "static", "style.css"))
     inject_local_font(os.path.join(os.getcwd(), "static", "AdobeClean.otf"), "AdobeClean")
 
