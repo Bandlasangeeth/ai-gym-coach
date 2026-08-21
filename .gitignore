@@ -5,13 +5,19 @@ __pycache__/
 # Virtual environment
 venv/
 .env/
+.venv/
 
 # OS files
 .DS_Store
 Thumbs.db
 
 # Database
+main_app/data.db
 Main App/data.db
 
 # Logs
 *.log
+
+# Streamlit secrets - NEVER commit API keys
+.streamlit/secrets.toml
+**/secrets.toml
