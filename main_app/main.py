@@ -41,11 +41,14 @@ def main():
 
             if not api_key and hasattr(st, "secrets") and "GROQ_API_KEY" in st.secrets:
                 api_key = st.secrets["GROQ_API_KEY"]
-            
-            groq_client = Groq(api_key=api_key)
-            llm_coach = LLMCoach(groq_client)
-            tts = TextToSpeech()
-            st.session_state.voice_pipeline = VoicePipeline(llm_coach, tts)
+
+            if api_key and api_key.strip():
+                groq_client = Groq(api_key=api_key.strip())
+                llm_coach = LLMCoach(groq_client)
+                tts = TextToSpeech()
+                st.session_state.voice_pipeline = VoicePipeline(llm_coach, tts)
+            else:
+                st.session_state.voice_pipeline = None
         except Exception as e:
             st.session_state.voice_pipeline = None
 
@@ -82,14 +85,16 @@ def main():
                 st.session_state.last_saved_sets_completed = 0
 
                 if st.session_state.voice_pipeline:
-                    result = st.session_state.voice_pipeline.process_event(
-                        event="workout_started",
-                        exercise=plan_exercise,
-                        metrics={}
-                    )
-                    
-                    if result:
-                        st.session_state.audio_to_play, st.session_state.coach_feedback = result
+                    try:
+                        result = st.session_state.voice_pipeline.process_event(
+                            event="workout_started",
+                            exercise=plan_exercise,
+                            metrics={}
+                        )
+                        if result:
+                            st.session_state.audio_to_play, st.session_state.coach_feedback = result
+                    except Exception:
+                        st.session_state.voice_pipeline = None
 
                 st.session_state.last_notified_sets_completed = 0
                 st.session_state.last_notified_workout_complete = False
@@ -107,13 +112,16 @@ def main():
                 st.session_state.workout_started = False
                 
                 if st.session_state.voice_pipeline:
-                    result = st.session_state.voice_pipeline.process_event(
-                        event="workout_completed",
-                        exercise=exercise,
-                        metrics={}
-                    )
-                    if result:
-                        st.session_state.audio_to_play, st.session_state.coach_feedback = result
+                    try:
+                        result = st.session_state.voice_pipeline.process_event(
+                            event="workout_completed",
+                            exercise=exercise,
+                            metrics={}
+                        )
+                        if result:
+                            st.session_state.audio_to_play, st.session_state.coach_feedback = result
+                    except Exception:
+                        st.session_state.voice_pipeline = None
 
                 st.rerun()
 
