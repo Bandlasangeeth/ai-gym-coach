@@ -1,9 +1,9 @@
 streamlit
 streamlit-webrtc
-mediapipe==0.10.14
+mediapipe
 opencv-python-headless
 pandas
 groq
 gtts
 python-dotenv
-numpy<2
+numpy
